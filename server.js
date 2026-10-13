@@ -54,20 +54,22 @@ export function getDefaultFrom(rawFrom = process.env.SMTP_FROM) {
   const match = raw.match(/^([\s\S]*?)\s*<([^>]+)>$/);
 
   if (match) {
-    const name = match[1].trim().replace(/^["']|["']$/g, '');
+    let name = match[1].trim().replace(/^["']|["']$/g, '');
+    name = name.replace(/\\n/g, '\n');
+    name = name.replace(/^(HR Haier India)\s+(ankalesh\.mahale@haierindia\.com)$/, '$1\n$2');
     const address = match[2].trim();
 
     return { name, address };
   }
 
   return {
-    name: 'HR Haier India',
+    name: 'HR Haier India\nankalesh.mahale@haierindia.com',
     address: fallbackAddress
   };
 }
 
 // Get current configuration status
-app.get('/api/config', (req, res) => {
+app.get(['/api/config', '/config'], (req, res) => {
   const host = process.env.SMTP_HOST || 'smtp.hostinger.com';
   const port = Number(process.env.SMTP_PORT || 465);
   const user = process.env.SMTP_USER || process.env.EMAIL_USER || '';
@@ -89,7 +91,7 @@ app.get('/api/config', (req, res) => {
 });
 
 // Verify SMTP connection
-app.get('/api/verify', async (req, res) => {
+app.get(['/api/verify', '/verify'], async (req, res) => {
   const startTime = Date.now();
   try {
     const transporter = getTransporter();
@@ -110,7 +112,7 @@ app.get('/api/verify', async (req, res) => {
 });
 
 // Send email endpoint with attachments support
-app.post('/api/send', upload.array('attachments', 10), async (req, res) => {
+app.post(['/api/send', '/send'], upload.array('attachments', 10), async (req, res) => {
   try {
     const { to, cc, bcc, subject, body, from, isHtml } = req.body;
 
@@ -213,6 +215,7 @@ app.get('*', (req, res) => {
 });
 
 export { app, getTransporter };
+export default app;
 
 const isMainModule = process.argv[1] && (
   fileURLToPath(import.meta.url) === path.resolve(process.argv[1]) ||
