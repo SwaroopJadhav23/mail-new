@@ -54,16 +54,21 @@ export function getDefaultFrom(rawFrom = process.env.SMTP_FROM) {
   const match = raw.match(/^([\s\S]*?)\s*<([^>]+)>$/);
 
   if (match) {
-    let name = match[1].trim().replace(/^["']|["']$/g, '');
-    name = name.replace(/\\n/g, '\n');
-    name = name.replace(/^(HR Haier India)\s+(ankalesh\.mahale@haierindia\.com)$/, '$1\n$2');
+    let name = match[1].trim();
+    // Strip surrounding quotes and stray inner quotes
+    name = name.replace(/^["']|["']$/g, '').replace(/"/g, '').trim();
+    // Replace newlines with hyphen separator
+    name = name.replace(/\\n|\n/g, ' - ');
+    // If separated by simple space without hyphen, standardize to hyphen
+    name = name.replace(/^(HR Haier India)\s+(ankalesh\.mahale@haierindia\.com)$/, '$1 - $2');
+    name = name.replace(/\s+-\s+/g, ' - ').trim();
     const address = match[2].trim();
 
     return { name, address };
   }
 
   return {
-    name: 'HR Haier India\nankalesh.mahale@haierindia.com',
+    name: 'HR Haier India - ankalesh.mahale@haierindia.com',
     address: fallbackAddress
   };
 }

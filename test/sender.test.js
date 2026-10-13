@@ -53,7 +53,7 @@ runTest('Default sender returns expected Nodemailer address object from .env', (
   assert.strictEqual(typeof sender, 'object', 'getDefaultFrom() must return an object');
   assert.notStrictEqual(sender, null, 'getDefaultFrom() must not return null');
   
-  const expectedName = 'HR Haier India\nankalesh.mahale@haierindia.com';
+  const expectedName = 'HR Haier India - ankalesh.mahale@haierindia.com';
   const expectedAddress = 'ankalesh.mahale@haierindiapvtltd.com';
 
   assert.strictEqual(
@@ -68,11 +68,10 @@ runTest('Default sender returns expected Nodemailer address object from .env', (
     `sender.address must be "${expectedAddress}" but got "${sender.address}"`
   );
 
-  // Assert newline preservation
-  assert.ok(sender.name.includes('\n'), 'sender.name must contain newline character \\n');
-  const [line1, line2] = sender.name.split('\n');
-  assert.strictEqual(line1, 'HR Haier India');
-  assert.strictEqual(line2, 'ankalesh.mahale@haierindia.com');
+  // Assert both names present and NO illegal newlines
+  assert.ok(sender.name.includes('HR Haier India'), 'sender.name must contain HR Haier India');
+  assert.ok(sender.name.includes('ankalesh.mahale@haierindia.com'), 'sender.name must contain ankalesh.mahale@haierindia.com');
+  assert.ok(!sender.name.includes('\n'), 'sender.name must NOT contain newline character \\n');
 });
 
 // ---------------------------------------------------------
@@ -80,31 +79,31 @@ runTest('Default sender returns expected Nodemailer address object from .env', (
 // ---------------------------------------------------------
 runTest('Parser handles string with space separator: "HR Haier India ankalesh.mahale@haierindia.com <ankalesh.mahale@haierindiapvtltd.com>"', () => {
   const result = getDefaultFrom('HR Haier India ankalesh.mahale@haierindia.com <ankalesh.mahale@haierindiapvtltd.com>');
-  assert.strictEqual(result.name, 'HR Haier India\nankalesh.mahale@haierindia.com');
+  assert.strictEqual(result.name, 'HR Haier India - ankalesh.mahale@haierindia.com');
   assert.strictEqual(result.address, 'ankalesh.mahale@haierindiapvtltd.com');
 });
 
 runTest('Parser handles string with explicit newline: "HR Haier India\\nankalesh.mahale@haierindia.com <ankalesh.mahale@haierindiapvtltd.com>"', () => {
   const result = getDefaultFrom('HR Haier India\nankalesh.mahale@haierindia.com <ankalesh.mahale@haierindiapvtltd.com>');
-  assert.strictEqual(result.name, 'HR Haier India\nankalesh.mahale@haierindia.com');
+  assert.strictEqual(result.name, 'HR Haier India - ankalesh.mahale@haierindia.com');
   assert.strictEqual(result.address, 'ankalesh.mahale@haierindiapvtltd.com');
 });
 
 runTest('Parser handles escaped newline string: "HR Haier India\\\\nankalesh.mahale@haierindia.com <...>"', () => {
   const result = getDefaultFrom('HR Haier India\\nankalesh.mahale@haierindia.com <ankalesh.mahale@haierindiapvtltd.com>');
-  assert.strictEqual(result.name, 'HR Haier India\nankalesh.mahale@haierindia.com');
+  assert.strictEqual(result.name, 'HR Haier India - ankalesh.mahale@haierindia.com');
   assert.strictEqual(result.address, 'ankalesh.mahale@haierindiapvtltd.com');
 });
 
 runTest('Parser handles quoted format: "\\"HR Haier India ankalesh.mahale@haierindia.com\\" <...>"', () => {
   const result = getDefaultFrom('"HR Haier India ankalesh.mahale@haierindia.com" <ankalesh.mahale@haierindiapvtltd.com>');
-  assert.strictEqual(result.name, 'HR Haier India\nankalesh.mahale@haierindia.com');
+  assert.strictEqual(result.name, 'HR Haier India - ankalesh.mahale@haierindia.com');
   assert.strictEqual(result.address, 'ankalesh.mahale@haierindiapvtltd.com');
 });
 
 runTest('Parser handles empty input with safe fallback', () => {
   const result = getDefaultFrom('');
-  assert.strictEqual(result.name, 'HR Haier India\nankalesh.mahale@haierindia.com');
+  assert.strictEqual(result.name, 'HR Haier India - ankalesh.mahale@haierindia.com');
   assert.ok(result.address.includes('@'), 'Fallback address must be a valid email');
 });
 
@@ -184,10 +183,10 @@ runTest('/api/config response includes sender object, senderName, senderAddress,
     defaultBody: 'hii'
   };
 
-  assert.strictEqual(configResponse.senderName, 'HR Haier India\nankalesh.mahale@haierindia.com');
+  assert.strictEqual(configResponse.senderName, 'HR Haier India - ankalesh.mahale@haierindia.com');
   assert.strictEqual(configResponse.senderAddress, 'ankalesh.mahale@haierindiapvtltd.com');
   assert.deepStrictEqual(configResponse.sender, {
-    name: 'HR Haier India\nankalesh.mahale@haierindia.com',
+    name: 'HR Haier India - ankalesh.mahale@haierindia.com',
     address: 'ankalesh.mahale@haierindiapvtltd.com'
   });
   assert.ok(configResponse.fromAddress.includes('ankalesh.mahale@haierindiapvtltd.com'));
@@ -210,7 +209,7 @@ runTest('/api/send ignores client "from" override attempts and strictly uses get
     // In server.js /api/send:
     // const mailFrom = getDefaultFrom(); (ignores req.body.from)
     const mailFrom = getDefaultFrom();
-    assert.strictEqual(mailFrom.name, 'HR Haier India\nankalesh.mahale@haierindia.com');
+    assert.strictEqual(mailFrom.name, 'HR Haier India - ankalesh.mahale@haierindia.com');
     assert.strictEqual(mailFrom.address, 'ankalesh.mahale@haierindiapvtltd.com');
     assert.notStrictEqual(mailFrom, clientFrom);
   }
