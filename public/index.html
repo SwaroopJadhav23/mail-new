@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haier Mail Dispatcher | Fast Email Sending</title>
+  <meta name="description" content="Professional mail dispatcher web dashboard for Hostinger SMTP with instant attachments and delivery verification.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-glow top-left"></div>
+  <div class="background-glow bottom-right"></div>
+
+  <div class="app-layout">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m22 2-7 20-4-9-9-4Z"></path>
+            <path d="M22 2 11 13"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Haier Mail Dispatcher</h1>
+          <p class="brand-subtitle">Hostinger SMTP Mail Engine</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div id="smtp-status-badge" class="status-badge checking">
+          <span class="status-dot"></span>
+          <span id="smtp-status-text">Checking SMTP...</span>
+        </div>
+        <button id="btn-ping-smtp" class="btn-ghost" title="Test SMTP Connection">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          <span>Verify SMTP</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+      <div class="composer-grid">
+        <!-- Main Composer Card -->
+        <section class="card composer-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <span class="pill-indicator">COMPOSER</span>
+              <h2 class="card-title">Send Email</h2>
+            </div>
+            <div class="composer-shortcuts">
+              <button type="button" id="btn-reset-defaults" class="btn-link" title="Restore default fields">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Reset Defaults
+              </button>
+            </div>
+          </div>
+
+          <form id="email-form" class="composer-form" autocomplete="off" novalidate>
+            <!-- From Field (Read-only / info) -->
+            <div class="form-row">
+              <label for="from-input" class="field-label">From</label>
+              <div class="field-input-wrapper">
+                <input type="text" id="from-input" name="from" class="text-input" readonly>
+                <span class="input-badge">.env Configured</span>
+              </div>
+            </div>
+
+            <!-- To Field -->
+            <div class="form-row">
+              <div class="label-with-actions">
+                <label for="to-input" class="field-label">To <span class="required">*</span></label>
+                <div class="field-mini-actions">
+                  <button type="button" id="toggle-cc-btn" class="mini-tag-btn">+ CC</button>
+                  <button type="button" id="toggle-bcc-btn" class="mini-tag-btn">+ BCC</button>
+                </div>
+              </div>
+              <div class="field-input-wrapper">
+                <input type="text" id="to-input" name="to" class="text-input highlight-field" value="suhas.karate09@gmail.com" required placeholder="recipient1@example.com, recipient2@example.com (separated by comma or space)">
+              </div>
+              <div id="to-recipients-preview" class="recipients-tags-container"></div>
+            </div>
+
+            <!-- Optional CC Field -->
+            <div class="form-row hidden-row" id="cc-row">
+              <label for="cc-input" class="field-label">Cc</label>
+              <div class="field-input-wrapper">
+                <input type="text" id="cc-input" name="cc" class="text-input" placeholder="cc1@example.com, cc2@example.com">
+              </div>
+              <div id="cc-recipients-preview" class="recipients-tags-container"></div>
+            </div>
+
+            <!-- Optional BCC Field -->
+            <div class="form-row hidden-row" id="bcc-row">
+              <label for="bcc-input" class="field-label">Bcc</label>
+              <div class="field-input-wrapper">
+                <input type="text" id="bcc-input" name="bcc" class="text-input" placeholder="bcc1@example.com, bcc2@example.com">
+              </div>
+              <div id="bcc-recipients-preview" class="recipients-tags-container"></div>
+            </div>
+
+            <!-- Subject Field -->
+            <div class="form-row">
+              <label for="subject-input" class="field-label">Subject</label>
+              <div class="field-input-wrapper">
+                <input type="text" id="subject-input" name="subject" class="text-input" value="HaierIndia Welcomes you" required placeholder="Email subject line">
+              </div>
+            </div>
+
+            <!-- Body Field -->
+            <div class="form-row">
+              <div class="label-with-actions">
+                <label for="body-input" class="field-label">Message Body</label>
+                <div class="body-view-toggle">
+                  <button type="button" id="mode-text-btn" class="view-btn active">Plain Text</button>
+                  <button type="button" id="mode-html-btn" class="view-btn">HTML</button>
+                </div>
+              </div>
+              <div class="field-input-wrapper">
+                <textarea id="body-input" name="body" class="text-textarea" rows="6" placeholder="Type your message here...">hii</textarea>
+              </div>
+            </div>
+
+            <!-- Attachment Field -->
+            <div class="form-row">
+              <label class="field-label">Attachments</label>
+              <div class="dropzone" id="dropzone">
+                <input type="file" id="file-input" multiple class="file-input-hidden">
+                <div class="dropzone-content">
+                  <div class="dropzone-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="dropzone-primary-text"><strong>Click to browse</strong> or drag & drop files here</p>
+                    <p class="dropzone-secondary-text">PDF, Word, Excel, Images, Zip (up to 25MB each)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Selected Files List -->
+              <div id="file-list" class="file-chips-container"></div>
+            </div>
+
+            <!-- Form Footer / Send Button -->
+            <div class="composer-footer">
+              <div class="footer-meta">
+                <span class="meta-tip"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to quick send</span>
+              </div>
+              <div class="footer-actions">
+                <button type="submit" id="btn-send-mail" class="btn-primary">
+                  <span class="btn-text">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <line x1="22" y1="2" x2="11" y2="13"></line>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Send Email Now
+                  </span>
+                  <span class="btn-loader">
+                    <span class="spinner"></span> Sending...
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- Right Side Panel: SMTP Server Details & Dispatch Log -->
+        <aside class="sidebar-panel">
+          <!-- SMTP Card -->
+          <div class="card meta-card">
+            <h3 class="panel-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              SMTP Configuration
+            </h3>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">Host</span>
+                <span id="info-host" class="info-value">smtp.hostinger.com</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Port / SSL</span>
+                <span id="info-port" class="info-value">465 (SSL/TLS)</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Account</span>
+                <span id="info-user" class="info-value">financehead@haier...</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Sender Name</span>
+                <span id="info-sender-name" class="info-value">Ankalesh Mahale</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dispatch History Card -->
+          <div class="card history-card">
+            <div class="history-header">
+              <h3 class="panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Sent Logs (<span id="history-count">0</span>)
+              </h3>
+              <button id="btn-clear-history" class="btn-xs">Clear</button>
+            </div>
+            <div id="history-container" class="history-list">
+              <div class="history-empty">
+                <p>No emails sent in this session yet.</p>
+                <small>Every sent message and Message ID will appear here.</small>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
